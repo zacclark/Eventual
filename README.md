@@ -27,6 +27,8 @@ eventualUser.finally { user in
 }
 ```
 
+**NOTE** `Eventual` does not care about threading/queuing, so you need to manage where you do work. Handlers will be called from whatever context the `Eventual` is resolved in. Need to be on the main thread after getting a value? Use one of the wealth of options in Foundation.
+
 You can also chain without losing type safety:
 
 ```swift
