@@ -65,7 +65,7 @@ extension Eventual {
 // MARK: - Resolver
 
 public struct Resolver<T> {
-    let eventual: Eventual<T>
+    public let eventual: Eventual<T>
     
     public init() {
         eventual = Eventual<T>()
