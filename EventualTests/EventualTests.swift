@@ -126,4 +126,17 @@ class EventualTests: XCTestCase {
         XCTAssertEqual("hi there", eventualValue)
     }
     
+    func testLift() {
+        func characterCount(s: String) -> Int {
+            return s.characters.count
+        }
+        
+        let sEventual = Eventual("four")
+        var eventualValue: Int? = nil
+        
+        lift(characterCount)(sEventual).finally { i in eventualValue = i }
+        
+        XCTAssertEqual(eventualValue, 4)
+    }
+    
 }

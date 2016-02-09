@@ -93,3 +93,7 @@ func join<A, B, C, D>(e1: Eventual<A>, _ e2: Eventual<B>, _ e3: Eventual<C>, _ e
 func join<A, B, C, D, E>(e1: Eventual<A>, _ e2: Eventual<B>, _ e3: Eventual<C>, _ e4: Eventual<D>, _ e5: Eventual<E>) -> Eventual<(A, B, C, D, E)> {
     return join(e1, e2, e3, e4).then { (a: A, b: B, c: C, d: D) in e5.then { e in (a, b, c, d, e) } }
 }
+
+func lift<A,B>(f: A -> B) -> (Eventual<A> -> Eventual<B>) {
+    return { (eA: Eventual<A>) in eA.then(f) }
+}
