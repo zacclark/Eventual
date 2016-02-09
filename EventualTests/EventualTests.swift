@@ -74,7 +74,7 @@ class EventualTests: XCTestCase {
         XCTAssertEqual("could be async", eventualValue)
     }
     
-    func testJoin() {
+    func testJoin2() {
         var firstJoinedValue: (String, Int)? = nil
         join(Eventual("hi"), Eventual(2)).finally { joinedValue in firstJoinedValue = joinedValue }
         
@@ -96,6 +96,16 @@ class EventualTests: XCTestCase {
         
         XCTAssertEqual(secondJoinedValue?.0, "YOLO")
         XCTAssertEqual(secondJoinedValue?.1, 100)
+    }
+    
+    func testJoin3() {
+        var firstJoinedValue: (String, Int, (String, String))? = nil
+        join(Eventual("hi"), Eventual(2), Eventual(("Inner", "Tuple"))).finally { joinedValue in firstJoinedValue = joinedValue }
+        
+        XCTAssertEqual(firstJoinedValue?.0, "hi")
+        XCTAssertEqual(firstJoinedValue?.1, 2)
+        XCTAssertEqual(firstJoinedValue?.2.0, "Inner")
+        XCTAssertEqual(firstJoinedValue?.2.1, "Tuple")
     }
     
     func testAvoidDoubleResolution() {
