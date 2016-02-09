@@ -64,7 +64,7 @@ extension Eventual {
 
 // MARK: - Resolver
 
-struct Resolver<T> {
+public struct Resolver<T> {
     let eventual: Eventual<T>
     
     init() {
@@ -78,22 +78,22 @@ struct Resolver<T> {
 
 // MARK: - Methods on eventuals
 
-func join<A, B>(e1: Eventual<A>, _ e2: Eventual<B>) -> Eventual<(A, B)> {
+public func join<A, B>(e1: Eventual<A>, _ e2: Eventual<B>) -> Eventual<(A, B)> {
     return e1.then { (tValue: A) in e2.then { (uValue: B) in (tValue, uValue) } }
 }
 
-func join<A, B, C>(e1: Eventual<A>, _ e2: Eventual<B>, _ e3: Eventual<C>) -> Eventual<(A, B, C)> {
+public func join<A, B, C>(e1: Eventual<A>, _ e2: Eventual<B>, _ e3: Eventual<C>) -> Eventual<(A, B, C)> {
     return join(e1, e2).then { (a: A, b: B) in e3.then { c in (a, b, c) } }
 }
 
-func join<A, B, C, D>(e1: Eventual<A>, _ e2: Eventual<B>, _ e3: Eventual<C>, _ e4: Eventual<D>) -> Eventual<(A, B, C, D)> {
+public func join<A, B, C, D>(e1: Eventual<A>, _ e2: Eventual<B>, _ e3: Eventual<C>, _ e4: Eventual<D>) -> Eventual<(A, B, C, D)> {
     return join(e1, e2, e3).then { (a: A, b: B, c: C) in e4.then { d in (a, b, c, d) } }
 }
 
-func join<A, B, C, D, E>(e1: Eventual<A>, _ e2: Eventual<B>, _ e3: Eventual<C>, _ e4: Eventual<D>, _ e5: Eventual<E>) -> Eventual<(A, B, C, D, E)> {
+public func join<A, B, C, D, E>(e1: Eventual<A>, _ e2: Eventual<B>, _ e3: Eventual<C>, _ e4: Eventual<D>, _ e5: Eventual<E>) -> Eventual<(A, B, C, D, E)> {
     return join(e1, e2, e3, e4).then { (a: A, b: B, c: C, d: D) in e5.then { e in (a, b, c, d, e) } }
 }
 
-func lift<A,B>(f: A -> B) -> (Eventual<A> -> Eventual<B>) {
+public func lift<A,B>(f: A -> B) -> (Eventual<A> -> Eventual<B>) {
     return { (eA: Eventual<A>) in eA.then(f) }
 }
