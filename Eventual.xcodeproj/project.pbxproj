@@ -3,13 +3,14 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 47;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		AEA8BF111C6A661D00DD0C90 /* Eventual.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA8BF101C6A661D00DD0C90 /* Eventual.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AEA8BF181C6A661D00DD0C90 /* Eventual.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AEA8BF0D1C6A661D00DD0C90 /* Eventual.framework */; };
 		AEA8BF1D1C6A661D00DD0C90 /* EventualTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEA8BF1C1C6A661D00DD0C90 /* EventualTests.swift */; };
+		AEA8BF281C6A663F00DD0C90 /* Eventual.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEA8BF271C6A663F00DD0C90 /* Eventual.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,6 +30,7 @@
 		AEA8BF171C6A661D00DD0C90 /* EventualTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EventualTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AEA8BF1C1C6A661D00DD0C90 /* EventualTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventualTests.swift; sourceTree = "<group>"; };
 		AEA8BF1E1C6A661D00DD0C90 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AEA8BF271C6A663F00DD0C90 /* Eventual.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Eventual.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,6 +75,7 @@
 			children = (
 				AEA8BF101C6A661D00DD0C90 /* Eventual.h */,
 				AEA8BF121C6A661D00DD0C90 /* Info.plist */,
+				AEA8BF271C6A663F00DD0C90 /* Eventual.swift */,
 			);
 			path = Eventual;
 			sourceTree = "<group>";
@@ -155,7 +158,7 @@
 				};
 			};
 			buildConfigurationList = AEA8BF071C6A661D00DD0C90 /* Build configuration list for PBXProject "Eventual" */;
-			compatibilityVersion = "Xcode 3.2";
+			compatibilityVersion = "Xcode 6.3";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -194,6 +197,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AEA8BF281C6A663F00DD0C90 /* Eventual.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -308,6 +312,8 @@
 		AEA8BF221C6A661D00DD0C90 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -318,12 +324,15 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.zacclark.Eventual;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		AEA8BF231C6A661D00DD0C90 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
