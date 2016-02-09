@@ -14,6 +14,10 @@ public class Eventual<T> {
     }
     
     private func resolve(v: T) {
+        guard value == nil else {
+            return
+        }
+
         value = v
         for e in effects {
             e(v)

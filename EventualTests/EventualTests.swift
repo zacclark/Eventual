@@ -98,4 +98,22 @@ class EventualTests: XCTestCase {
         XCTAssertEqual(secondJoinedValue?.1, 100)
     }
     
+    func testAvoidDoubleResolution() {
+        let r = Resolver<String>()
+        let e = r.eventual
+        
+        var eventualValue: String? = nil
+        e.finally { s in eventualValue = s }
+        
+        XCTAssertNil(eventualValue)
+        
+        r.resolve("hi there")
+        
+        XCTAssertEqual("hi there", eventualValue)
+        
+        r.resolve("some new value")
+        
+        XCTAssertEqual("hi there", eventualValue)
+    }
+    
 }
