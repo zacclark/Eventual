@@ -62,10 +62,8 @@ extension Eventual {
     }
 }
 
-internal extension Eventual {
-    internal var valueForTests: T? {
-        return value
-    }
+public func UnsafeGetEventualValue<T>(e: Eventual<T>) -> T? {
+    return e.value
 }
 
 // MARK: - Resolver

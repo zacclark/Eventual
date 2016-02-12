@@ -143,7 +143,7 @@ class EventualTests: XCTestCase {
         }
         let liftedAdd = lift(add)
         let liftedValue = liftedAdd( Eventual(2), Eventual(3) )
-        XCTAssertEqual(liftedValue.valueForTests, 5)
+        XCTAssertEqual(UnsafeGetEventualValue(liftedValue), 5)
         
         func weirdThreeArg(one: String, two: Int, three: String?) -> String {
             return "\(one) - \(two * 2) - \(three ?? "(missing)")"
@@ -152,10 +152,10 @@ class EventualTests: XCTestCase {
         XCTAssertEqual(weirdThreeArg("z", two: 10, three: nil), "z - 20 - (missing)")
         let liftedWeird = lift(weirdThreeArg)
         XCTAssertEqual(
-            liftedWeird( Eventual("a"), Eventual(2), Eventual("b") ).valueForTests
+            UnsafeGetEventualValue(liftedWeird( Eventual("a"), Eventual(2), Eventual("b") ))
             , "a - 4 - b")
         XCTAssertEqual(
-            liftedWeird( Eventual("z"), Eventual(10), Eventual(nil) ).valueForTests
+            UnsafeGetEventualValue(liftedWeird( Eventual("z"), Eventual(10), Eventual(nil) ))
             , "z - 20 - (missing)")
     }
     
@@ -163,11 +163,11 @@ class EventualTests: XCTestCase {
         let r = Resolver<String>()
         let e = r.eventual
         
-        XCTAssertNil(e.valueForTests)
+        XCTAssertNil(UnsafeGetEventualValue(e))
         
         r.resolve("hi there")
         
-        XCTAssertEqual(e.valueForTests, "hi there")
+        XCTAssertEqual(UnsafeGetEventualValue(e), "hi there")
     }
     
 }

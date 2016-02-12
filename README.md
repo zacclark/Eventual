@@ -69,19 +69,19 @@ let liftedAdd = lift(add)
 // the final value will be resolved as the addition of the two values once they resolve
 ```
 
-`valueForTests`:
+`UnsafeGetEventualValue`:
 
-If you `@testable import Eventual` you can ask an `Eventual` for its value, to test resolution:
+This method is intended to help while testing, when you expect an `Eventual` to be resolved in a particular way. Use of this in production code **is heavily discouraged** as it sidesteps much of the point of the tool.
 
 ```swift
 func testResolvesAfterWork() {
     let workDoer = WorkDoer()
     let eventual = workDoer.work()
 
-    XCTAssertNil(eventual.valueForTests)
+    XCTAssertNil(UnsafeGetEventualValue(eventual))
 
     workDoer.finishWorking()
 
-    XCTAssertEqual(eventual.valueForTests, "work finished!")    
+    XCTAssertEqual(UnsafeGetEventualValue(eventual), "work finished!")    
 }
 ```
