@@ -6,7 +6,7 @@ Simple implementation of an async value in swift.
 
 ```swift
 func getUserFromInternet() -> Eventual<User> {
-  let r = Resolver<Eventual>()
+  let r = Resolver<User>()
   
   networkClient.get("whatever") { json in
     // do your json -> domain object
