@@ -11,7 +11,6 @@
 		AEA8BF181C6A661D00DD0C90 /* Eventual.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AEA8BF0D1C6A661D00DD0C90 /* Eventual.framework */; };
 		AEA8BF1D1C6A661D00DD0C90 /* EventualTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEA8BF1C1C6A661D00DD0C90 /* EventualTests.swift */; };
 		AEA8BF281C6A663F00DD0C90 /* Eventual.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEA8BF271C6A663F00DD0C90 /* Eventual.swift */; };
-		AEA8BF7A1C6E8D9C00DD0C90 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = AEA8BF791C6E8D9C00DD0C90 /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -200,7 +199,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AEA8BF7A1C6E8D9C00DD0C90 /* README.md in Sources */,
 				AEA8BF281C6A663F00DD0C90 /* Eventual.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -389,6 +387,7 @@
 				AEA8BF231C6A661D00DD0C90 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		AEA8BF241C6A661D00DD0C90 /* Build configuration list for PBXNativeTarget "EventualTests" */ = {
 			isa = XCConfigurationList;
@@ -397,6 +396,7 @@
 				AEA8BF261C6A661D00DD0C90 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
