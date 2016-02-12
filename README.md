@@ -54,3 +54,20 @@ join(Eventual("hi"), Eventual(23)).finally { tuple in
   print(tuple.1) // 23
 }
 ```
+
+`valueForTests`:
+
+If you `@testable import Eventual` you can ask an `Eventual` for its value, to test resolution:
+
+```swift
+func testResolvesAfterWork() {
+    let workDoer = WorkDoer()
+    let eventual = workDoer.work()
+
+    XCTAssertNil(eventual.valueForTests)
+
+    workDoer.finishWorking()
+
+    XCTAssertEqual(eventual.valueForTests, "work finished!")    
+}
+```

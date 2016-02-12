@@ -139,4 +139,15 @@ class EventualTests: XCTestCase {
         XCTAssertEqual(eventualValue, 4)
     }
     
+    func testSpecialAccessToInternalValueInTests() {
+        let r = Resolver<String>()
+        let e = r.eventual
+        
+        XCTAssertNil(e.valueForTests)
+        
+        r.resolve("hi there")
+        
+        XCTAssertEqual(e.valueForTests, "hi there")
+    }
+    
 }

@@ -11,6 +11,7 @@
 		AEA8BF181C6A661D00DD0C90 /* Eventual.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AEA8BF0D1C6A661D00DD0C90 /* Eventual.framework */; };
 		AEA8BF1D1C6A661D00DD0C90 /* EventualTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEA8BF1C1C6A661D00DD0C90 /* EventualTests.swift */; };
 		AEA8BF281C6A663F00DD0C90 /* Eventual.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEA8BF271C6A663F00DD0C90 /* Eventual.swift */; };
+		AEA8BF7A1C6E8D9C00DD0C90 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = AEA8BF791C6E8D9C00DD0C90 /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,6 +32,7 @@
 		AEA8BF1C1C6A661D00DD0C90 /* EventualTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventualTests.swift; sourceTree = "<group>"; };
 		AEA8BF1E1C6A661D00DD0C90 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AEA8BF271C6A663F00DD0C90 /* Eventual.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Eventual.swift; sourceTree = "<group>"; };
+		AEA8BF791C6E8D9C00DD0C90 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +57,7 @@
 		AEA8BF031C6A661D00DD0C90 = {
 			isa = PBXGroup;
 			children = (
+				AEA8BF791C6E8D9C00DD0C90 /* README.md */,
 				AEA8BF0F1C6A661D00DD0C90 /* Eventual */,
 				AEA8BF1B1C6A661D00DD0C90 /* EventualTests */,
 				AEA8BF0E1C6A661D00DD0C90 /* Products */,
@@ -197,6 +200,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AEA8BF7A1C6E8D9C00DD0C90 /* README.md in Sources */,
 				AEA8BF281C6A663F00DD0C90 /* Eventual.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

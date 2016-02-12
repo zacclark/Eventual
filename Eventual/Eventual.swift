@@ -62,6 +62,12 @@ extension Eventual {
     }
 }
 
+internal extension Eventual {
+    internal var valueForTests: T? {
+        return value
+    }
+}
+
 // MARK: - Resolver
 
 public struct Resolver<T> {
