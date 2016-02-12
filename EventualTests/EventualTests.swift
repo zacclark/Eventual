@@ -137,6 +137,26 @@ class EventualTests: XCTestCase {
         lift(characterCount)(sEventual).finally { i in eventualValue = i }
         
         XCTAssertEqual(eventualValue, 4)
+        
+        func add(lhs: Int, rhs: Int) -> Int {
+            return lhs + rhs
+        }
+        let liftedAdd = lift(add)
+        let liftedValue = liftedAdd( Eventual(2), Eventual(3) )
+        XCTAssertEqual(liftedValue.valueForTests, 5)
+        
+        func weirdThreeArg(one: String, two: Int, three: String?) -> String {
+            return "\(one) - \(two * 2) - \(three ?? "(missing)")"
+        }
+        XCTAssertEqual(weirdThreeArg("a", two: 2, three: "b"), "a - 4 - b")
+        XCTAssertEqual(weirdThreeArg("z", two: 10, three: nil), "z - 20 - (missing)")
+        let liftedWeird = lift(weirdThreeArg)
+        XCTAssertEqual(
+            liftedWeird( Eventual("a"), Eventual(2), Eventual("b") ).valueForTests
+            , "a - 4 - b")
+        XCTAssertEqual(
+            liftedWeird( Eventual("z"), Eventual(10), Eventual(nil) ).valueForTests
+            , "z - 20 - (missing)")
     }
     
     func testSpecialAccessToInternalValueInTests() {

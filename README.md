@@ -55,6 +55,20 @@ join(Eventual("hi"), Eventual(23)).finally { tuple in
 }
 ```
 
+`lift`:
+
+Convert functions from operating on concrete types to work on eventuals instead:
+
+```swift
+func add(lhs: Int, rhs: Int) -> Int {
+    return lhs + rhs
+}
+// add is Int, Int -> Int
+let liftedAdd = lift(add)
+// liftedAdd is Eventual<Int>, Eventual<Int> -> Eventual<Int>
+// the final value will be resolved as the addition of the two values once they resolve
+```
+
 `valueForTests`:
 
 If you `@testable import Eventual` you can ask an `Eventual` for its value, to test resolution:

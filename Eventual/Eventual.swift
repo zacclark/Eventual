@@ -84,6 +84,8 @@ public struct Resolver<T> {
 
 // MARK: - Methods on eventuals
 
+// MARK: join
+
 public func join<A, B>(e1: Eventual<A>, _ e2: Eventual<B>) -> Eventual<(A, B)> {
     return e1.then { (tValue: A) in e2.then { (uValue: B) in (tValue, uValue) } }
 }
@@ -100,6 +102,16 @@ public func join<A, B, C, D, E>(e1: Eventual<A>, _ e2: Eventual<B>, _ e3: Eventu
     return join(e1, e2, e3, e4).then { (a: A, b: B, c: C, d: D) in e5.then { e in (a, b, c, d, e) } }
 }
 
+// MARK: lift
+
 public func lift<A,B>(f: A -> B) -> (Eventual<A> -> Eventual<B>) {
     return { (eA: Eventual<A>) in eA.then(f) }
+}
+
+public func lift<A,B,C>(f: (A, B) -> C) -> ((Eventual<A>, Eventual<B>) -> Eventual<C>) {
+    return { (eA: Eventual<A>, eB: Eventual<B>) in join(eA, eB).then(f) }
+}
+
+public func lift<A,B,C,D>(f: (A, B, C) -> D) -> ((Eventual<A>, Eventual<B>, Eventual<C>) -> Eventual<D>) {
+    return { (eA: Eventual<A>, eB: Eventual<B>, eC: Eventual<C>) in join(eA, eB, eC).then(f) }
 }
