@@ -5,102 +5,86 @@ class EventualTests: XCTestCase {
     
     func testPreResolvedEventuals() {
         let e = Eventual("a string")
-        var expectedString: String? = nil
-        e.finally { s in expectedString = s }
-        XCTAssertEqual("a string", expectedString)
+        XCTAssertEqual(UnsafeGetEventualValue(e), "a string")
     }
     
     func testResolvingLater() {
         let r = Resolver<String>()
         let e = r.eventual
         
-        var eventualValue: String? = nil
-        e.finally { s in eventualValue = s }
-        
-        XCTAssertNil(eventualValue)
+        XCTAssertNil(UnsafeGetEventualValue(e))
         
         r.resolve("hi there")
         
-        XCTAssertEqual("hi there", eventualValue)
+        XCTAssertEqual(UnsafeGetEventualValue(e), "hi there")
     }
     
     func testParallel() {
         let r = Resolver<String>()
-        let e = r.eventual
+        let e1 = r.eventual
+        let e2 = r.eventual
         
-        var eventualValue1: String? = nil
-        var eventualValue2: String? = nil
-        e.finally { s in eventualValue1 = s }
-        e.finally { s in eventualValue2 = s }
-        
-        XCTAssertNil(eventualValue1)
-        XCTAssertNil(eventualValue2)
+        XCTAssertNil(UnsafeGetEventualValue(e1))
+        XCTAssertNil(UnsafeGetEventualValue(e2))
         
         r.resolve("BOTH")
         
-        XCTAssertEqual("BOTH", eventualValue1)
-        XCTAssertEqual("BOTH", eventualValue2)
+        XCTAssertEqual("BOTH", UnsafeGetEventualValue(e1))
+        XCTAssertEqual("BOTH", UnsafeGetEventualValue(e2))
     }
     
     func testSimpleChaining() {
         let r = Resolver<String>()
         let e = r.eventual
         
-        var eventualValue: Int? = nil
-        
         let eChained = e.then { s in s.characters.count }
-        eChained.finally { i in eventualValue = i }
         
-        XCTAssertNil(eventualValue)
+        XCTAssertNil(UnsafeGetEventualValue(eChained))
         
         r.resolve("four")
         
-        XCTAssertEqual(4, eventualValue)
+        XCTAssertEqual(4, UnsafeGetEventualValue(eChained))
     }
     
     func testAdvancedChainingAkaReturningAnEventual() {
         let r = Resolver<String>()
         let e = r.eventual
         
-        var eventualValue: String? = nil
-        
         let eChained = e.then { _ in Eventual("could be async") }
-        eChained.finally { s in eventualValue = s }
         
-        XCTAssertNil(eventualValue)
+        XCTAssertNil(UnsafeGetEventualValue(eChained))
         
         r.resolve("ignored")
         
-        XCTAssertEqual("could be async", eventualValue)
+        XCTAssertEqual("could be async", UnsafeGetEventualValue(eChained))
     }
     
     func testJoin2() {
-        var firstJoinedValue: (String, Int)? = nil
-        join(Eventual("hi"), Eventual(2)).finally { joinedValue in firstJoinedValue = joinedValue }
+        let joined = join(Eventual("hi"), Eventual(2))
+        let firstJoinedValue: (String, Int)? = UnsafeGetEventualValue(joined)
         
         XCTAssertEqual(firstJoinedValue?.0, "hi")
         XCTAssertEqual(firstJoinedValue?.1, 2)
         
-        var secondJoinedValue: (String, Int)? = nil
         let r1 = Resolver<String>()
         let r2 = Resolver<Int>()
-        join(r1.eventual, r2.eventual).finally { joinedValue in secondJoinedValue = joinedValue }
+        let joined2 = join(r1.eventual, r2.eventual)
         
-        XCTAssertNil(secondJoinedValue)
+        XCTAssertNil(UnsafeGetEventualValue(joined2))
         
         r1.resolve("YOLO")
         
-        XCTAssertNil(secondJoinedValue)
+        XCTAssertNil(UnsafeGetEventualValue(joined2))
         
         r2.resolve(100)
         
-        XCTAssertEqual(secondJoinedValue?.0, "YOLO")
-        XCTAssertEqual(secondJoinedValue?.1, 100)
+        XCTAssertEqual(UnsafeGetEventualValue(joined2)?.0, "YOLO")
+        XCTAssertEqual(UnsafeGetEventualValue(joined2)?.1, 100)
     }
     
     func testJoin3() {
-        var firstJoinedValue: (String, Int, (String, String))? = nil
-        join(Eventual("hi"), Eventual(2), Eventual(("Inner", "Tuple"))).finally { joinedValue in firstJoinedValue = joinedValue }
+        let joined = join(Eventual("hi"), Eventual(2), Eventual(("Inner", "Tuple")))
+        let firstJoinedValue: (String, Int, (String, String))? = UnsafeGetEventualValue(joined)
         
         XCTAssertEqual(firstJoinedValue?.0, "hi")
         XCTAssertEqual(firstJoinedValue?.1, 2)
@@ -112,18 +96,15 @@ class EventualTests: XCTestCase {
         let r = Resolver<String>()
         let e = r.eventual
         
-        var eventualValue: String? = nil
-        e.finally { s in eventualValue = s }
-        
-        XCTAssertNil(eventualValue)
+        XCTAssertNil(UnsafeGetEventualValue(e))
         
         r.resolve("hi there")
         
-        XCTAssertEqual("hi there", eventualValue)
+        XCTAssertEqual("hi there", UnsafeGetEventualValue(e))
         
         r.resolve("some new value")
         
-        XCTAssertEqual("hi there", eventualValue)
+        XCTAssertEqual("hi there", UnsafeGetEventualValue(e))
     }
     
     func testLift() {
@@ -134,9 +115,9 @@ class EventualTests: XCTestCase {
         let sEventual = Eventual("four")
         var eventualValue: Int? = nil
         
-        lift(characterCount)(sEventual).finally { i in eventualValue = i }
+        let lifted = lift(characterCount)(sEventual)
         
-        XCTAssertEqual(eventualValue, 4)
+        XCTAssertEqual(UnsafeGetEventualValue(lifted), 4)
         
         func add(lhs: Int, rhs: Int) -> Int {
             return lhs + rhs
@@ -168,6 +149,33 @@ class EventualTests: XCTestCase {
         r.resolve("hi there")
         
         XCTAssertEqual(UnsafeGetEventualValue(e), "hi there")
+    }
+    
+    func testResolvingOnMainThread() {
+        let mainQueue = NSOperationQueue.mainQueue()
+        let otherQueue = NSOperationQueue()
+        
+        let r = Resolver<String>()
+        let e = r.eventual
+        
+        let expectation = self.expectationWithDescription("resolution happened")
+        
+        var calledOnQueue: NSOperationQueue? = nil
+        var calledWithValue: String? = nil
+        e.finallyOnMainThread { value in
+            calledOnQueue = NSOperationQueue.currentQueue()
+            calledWithValue = value
+            expectation.fulfill()
+        }
+        
+        otherQueue.addOperationWithBlock({
+            r.resolve("in the background")
+        })
+        
+        self.waitForExpectationsWithTimeout(10, handler: nil)
+        
+        XCTAssertEqual(calledOnQueue, mainQueue)
+        XCTAssertEqual(calledWithValue, "in the background")
     }
     
 }

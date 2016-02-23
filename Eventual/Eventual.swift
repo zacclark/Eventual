@@ -24,12 +24,25 @@ public class Eventual<T> {
         }
     }
     
-    public func finally(f: T -> Void) {
+    private func finally(f: T -> Void) {
         if let v = self.value {
             f(v)
             return
         }
         effects.append(f)
+    }
+    
+    public func finallyOnMainThread(f: T -> Void) {
+        let mainThreadF: T -> Void = { t in
+            NSOperationQueue.mainQueue().addOperationWithBlock({
+                f(t)
+            })
+        }
+        if let v = self.value {
+            mainThreadF(v)
+            return
+        }
+        effects.append(mainThreadF)
     }
     
     public func map<U>(f: T -> U) -> Eventual<U> {

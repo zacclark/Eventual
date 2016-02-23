@@ -22,18 +22,16 @@ func getUserFromInternet() -> Eventual<User> {
 
 ```swift
 let eventualUser = getUserFromInternet()
-eventualUser.finally { user in 
+eventualUser.finallyOnMainThread { user in 
   // now you have a user!
 }
 ```
-
-**NOTE** `Eventual` does not care about threading/queuing, so you need to manage where you do work. Handlers will be called from whatever context the `Eventual` is resolved in. Need to be on the main thread after getting a value? Use one of the wealth of options in Foundation.
 
 You can also chain without losing type safety:
 
 ```swift
 let nameEventual = eventualUser.then { user in user.firstName }
-nameEventual.finally { name in print(name) }
+nameEventual.finallyOnMainThread { name in print(name) }
 ```
 
 Or chain with other async operations:
@@ -49,7 +47,7 @@ let eventualRepos = getUserFromInternet().then{ user in getReposForUser(user) }
 `join`:
 
 ```swift
-join(Eventual("hi"), Eventual(23)).finally { tuple in
+join(Eventual("hi"), Eventual(23)).finallyOnMainThread { tuple in
   print(tuple.0) // hi
   print(tuple.1) // 23
 }
