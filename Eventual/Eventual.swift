@@ -34,9 +34,13 @@ public class Eventual<T> {
     
     public func finallyOnMainThread(f: T -> Void) {
         let mainThreadF: T -> Void = { t in
-            NSOperationQueue.mainQueue().addOperationWithBlock({
+            if NSThread.isMainThread() {
                 f(t)
-            })
+            } else {
+                NSOperationQueue.mainQueue().addOperationWithBlock({
+                    f(t)
+                })
+            }
         }
         if let v = self.value {
             mainThreadF(v)

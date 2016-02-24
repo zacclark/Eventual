@@ -151,7 +151,7 @@ class EventualTests: XCTestCase {
         XCTAssertEqual(UnsafeGetEventualValue(e), "hi there")
     }
     
-    func testResolvingOnMainThread() {
+    func testResolvingOffMainThreadWhileFinalizingOnMainThread() {
         let mainQueue = NSOperationQueue.mainQueue()
         let otherQueue = NSOperationQueue()
         
@@ -176,6 +176,19 @@ class EventualTests: XCTestCase {
         
         XCTAssertEqual(calledOnQueue, mainQueue)
         XCTAssertEqual(calledWithValue, "in the background")
+    }
+    
+    /// To aid use in tests, here resolution might be used during test setup, it is useful to avoid any async behavior. If we're already on the main thread we won't enqueue the operation, but rather execute it immediately.
+    func testResolvingOnMainThreadAndFinalizingThereImmediately() {
+        let r = Resolver<String>()
+        let e = r.eventual
+        
+        r.resolve("hi")
+        
+        var value: String? = nil
+        e.finallyOnMainThread { v in value = v }
+        
+        XCTAssertEqual(value, "hi")
     }
     
 }
