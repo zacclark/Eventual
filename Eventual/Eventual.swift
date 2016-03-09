@@ -71,7 +71,7 @@ public class Eventual<T> {
     }
 }
 
-// MARK: - Convenience extenion for simpler naming
+// MARK: - Convenience extension for simpler naming
 
 extension Eventual {
     public func then<U>(f: T -> U) -> Eventual<U> {
@@ -85,6 +85,28 @@ extension Eventual {
 
 public func UnsafeGetEventualValue<T>(e: Eventual<T>) -> T? {
     return e.value
+}
+
+// MARK: - Convenience extension for forcibly delaying resolution (useful for testing)
+
+extension Eventual {
+    /// Delay resolution by some amount of seconds
+    /// - parameter seconds: The amount of seconds to delay by
+    /// - returns: A new Eventual with the delay applied
+    func delayedBy(seconds: Double) -> Eventual<T> {
+        return self.bind { t in
+            let r = Resolver<Void>()
+            
+            let dispatchTime = dispatch_time(DISPATCH_TIME_NOW, Int64(seconds * Double(NSEC_PER_SEC)))
+            dispatch_after(
+                dispatchTime,
+                dispatch_get_main_queue(),
+                r.resolve
+            )
+            
+            return r.eventual.map { _ in t }
+        }
+    }
 }
 
 // MARK: - Resolver
