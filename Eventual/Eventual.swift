@@ -93,7 +93,7 @@ extension Eventual {
     /// Delay resolution by some amount of seconds
     /// - parameter seconds: The amount of seconds to delay by
     /// - returns: A new Eventual with the delay applied
-    func delayedBy(seconds: Double) -> Eventual<T> {
+    public func delayedBy(seconds: Double) -> Eventual<T> {
         return self.bind { t in
             let r = Resolver<Void>()
             
