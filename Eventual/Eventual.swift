@@ -57,13 +57,17 @@ public class Eventual<T> {
         return otherE
     }
     
-    public func bind<U>(f: T -> Eventual<U>) -> Eventual<U> {
+    public func flatMap<U>(f: T -> Eventual<U>) -> Eventual<U> {
         let otherE = Eventual<U>()
         finally { t in
             let newE = f(t)
             newE.finally({ u in otherE.resolve(u) })
         }
         return otherE
+    }
+    
+    public func bind<U>(f: T -> Eventual<U>) -> Eventual<U> {
+        return flatMap(f)
     }
 }
 
