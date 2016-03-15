@@ -59,6 +59,22 @@ class EventualTests: XCTestCase {
         XCTAssertEqual("could be async", UnsafeGetEventualValue(eChained))
     }
     
+    func testFlatMapOperator() {
+        let r = Resolver<String>()
+        let builder1 = { (string: String) in
+            return Eventual("[[ \(string) ]]")
+        }
+        let builder2 = { (string: String) in
+            return Eventual("__ \(string) __")
+        }
+        
+        let x = r.eventual >>- builder1 >>- builder2
+        
+        r.resolve("*")
+        
+        XCTAssertEqual(x.peek(), "__ [[ * ]] __")
+    }
+    
     func testJoin2() {
         let joined = join(Eventual("hi"), Eventual(2))
         let firstJoinedValue: (String, Int)? = UnsafeGetEventualValue(joined)

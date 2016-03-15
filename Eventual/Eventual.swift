@@ -160,3 +160,10 @@ public func lift<A,B,C>(f: (A, B) -> C) -> ((Eventual<A>, Eventual<B>) -> Eventu
 public func lift<A,B,C,D>(f: (A, B, C) -> D) -> ((Eventual<A>, Eventual<B>, Eventual<C>) -> Eventual<D>) {
     return { (eA: Eventual<A>, eB: Eventual<B>, eC: Eventual<C>) in join(eA, eB, eC).then(f) }
 }
+
+// MARK: operators
+
+infix operator >>- { associativity left precedence 100 }
+func >>-<T,U>(lhs: Eventual<T>, rhs: T -> Eventual<U>) -> Eventual<U> {
+    return lhs.flatMap(rhs)
+}
