@@ -151,6 +151,17 @@ class EventualTests: XCTestCase {
         XCTAssertEqual(UnsafeGetEventualValue(e), "hi there")
     }
     
+    func testPeek() {
+        let r = Resolver<String>()
+        let e = r.eventual
+        
+        XCTAssertNil(e.peek())
+        
+        r.resolve("hi there")
+        
+        XCTAssertEqual(e.peek(), "hi there")
+    }
+    
     func testResolvingOffMainThreadWhileFinalizingOnMainThread() {
         let mainQueue = NSOperationQueue.mainQueue()
         let otherQueue = NSOperationQueue()

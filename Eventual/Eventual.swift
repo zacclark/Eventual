@@ -69,6 +69,10 @@ public class Eventual<T> {
     public func bind<U>(f: T -> Eventual<U>) -> Eventual<U> {
         return flatMap(f)
     }
+    
+    public func peek() -> T? {
+        return value
+    }
 }
 
 // MARK: - Convenience extension for simpler naming
