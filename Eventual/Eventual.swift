@@ -65,11 +65,13 @@ public class Eventual<T> {
         }
         return otherE
     }
-    
+
     public func bind<U>(f: T -> Eventual<U>) -> Eventual<U> {
         return flatMap(f)
     }
     
+    /// "Peek" into the current state of the Eventual
+    /// - returns: `T?` The eventual value (when resolved) or nil (when not yet resolved)
     public func peek() -> T? {
         return value
     }
@@ -164,6 +166,7 @@ public func lift<A,B,C,D>(f: (A, B, C) -> D) -> ((Eventual<A>, Eventual<B>, Even
 // MARK: operators
 
 infix operator >>- { associativity left precedence 100 }
-func >>-<T,U>(lhs: Eventual<T>, rhs: T -> Eventual<U>) -> Eventual<U> {
+/// Operator equivalent to `flatMap`
+public func >>-<T,U>(lhs: Eventual<T>, rhs: T -> Eventual<U>) -> Eventual<U> {
     return lhs.flatMap(rhs)
 }
