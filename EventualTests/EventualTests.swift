@@ -5,18 +5,18 @@ class EventualTests: XCTestCase {
     
     func testPreResolvedEventuals() {
         let e = Eventual("a string")
-        XCTAssertEqual(UnsafeGetEventualValue(e), "a string")
+        XCTAssertEqual(e.peek(), "a string")
     }
     
     func testResolvingLater() {
         let r = Resolver<String>()
         let e = r.eventual
         
-        XCTAssertNil(UnsafeGetEventualValue(e))
+        XCTAssertNil(e.peek())
         
         r.resolve("hi there")
         
-        XCTAssertEqual(UnsafeGetEventualValue(e), "hi there")
+        XCTAssertEqual(e.peek(), "hi there")
     }
     
     func testParallel() {
@@ -24,39 +24,39 @@ class EventualTests: XCTestCase {
         let e1 = r.eventual
         let e2 = r.eventual
         
-        XCTAssertNil(UnsafeGetEventualValue(e1))
-        XCTAssertNil(UnsafeGetEventualValue(e2))
+        XCTAssertNil(e1.peek())
+        XCTAssertNil(e2.peek())
         
         r.resolve("BOTH")
         
-        XCTAssertEqual("BOTH", UnsafeGetEventualValue(e1))
-        XCTAssertEqual("BOTH", UnsafeGetEventualValue(e2))
+        XCTAssertEqual("BOTH", e1.peek())
+        XCTAssertEqual("BOTH", e2.peek())
     }
     
     func testSimpleChaining() {
         let r = Resolver<String>()
         let e = r.eventual
         
-        let eChained = e.then { s in s.characters.count }
+        let eChained = e.map { s in s.characters.count }
         
-        XCTAssertNil(UnsafeGetEventualValue(eChained))
+        XCTAssertNil(eChained.peek())
         
         r.resolve("four")
         
-        XCTAssertEqual(4, UnsafeGetEventualValue(eChained))
+        XCTAssertEqual(4, eChained.peek())
     }
     
     func testAdvancedChainingAkaReturningAnEventual() {
         let r = Resolver<String>()
         let e = r.eventual
         
-        let eChained = e.then { _ in Eventual("could be async") }
+        let eChained = e.flatMap { _ in Eventual("could be async") }
         
-        XCTAssertNil(UnsafeGetEventualValue(eChained))
+        XCTAssertNil(eChained.peek())
         
         r.resolve("ignored")
         
-        XCTAssertEqual("could be async", UnsafeGetEventualValue(eChained))
+        XCTAssertEqual("could be async", eChained.peek())
     }
     
     func testFlatMapOperator() {
@@ -77,7 +77,7 @@ class EventualTests: XCTestCase {
     
     func testJoin2() {
         let joined = join(Eventual("hi"), Eventual(2))
-        let firstJoinedValue: (String, Int)? = UnsafeGetEventualValue(joined)
+        let firstJoinedValue: (String, Int)? = joined.peek()
         
         XCTAssertEqual(firstJoinedValue?.0, "hi")
         XCTAssertEqual(firstJoinedValue?.1, 2)
@@ -86,21 +86,21 @@ class EventualTests: XCTestCase {
         let r2 = Resolver<Int>()
         let joined2 = join(r1.eventual, r2.eventual)
         
-        XCTAssertNil(UnsafeGetEventualValue(joined2))
+        XCTAssertNil(joined2.peek())
         
         r1.resolve("YOLO")
         
-        XCTAssertNil(UnsafeGetEventualValue(joined2))
+        XCTAssertNil(joined2.peek())
         
         r2.resolve(100)
         
-        XCTAssertEqual(UnsafeGetEventualValue(joined2)?.0, "YOLO")
-        XCTAssertEqual(UnsafeGetEventualValue(joined2)?.1, 100)
+        XCTAssertEqual(joined2.peek()?.0, "YOLO")
+        XCTAssertEqual(joined2.peek()?.1, 100)
     }
     
     func testJoin3() {
         let joined = join(Eventual("hi"), Eventual(2), Eventual(("Inner", "Tuple")))
-        let firstJoinedValue: (String, Int, (String, String))? = UnsafeGetEventualValue(joined)
+        let firstJoinedValue: (String, Int, (String, String))? = joined.peek()
         
         XCTAssertEqual(firstJoinedValue?.0, "hi")
         XCTAssertEqual(firstJoinedValue?.1, 2)
@@ -112,15 +112,15 @@ class EventualTests: XCTestCase {
         let r = Resolver<String>()
         let e = r.eventual
         
-        XCTAssertNil(UnsafeGetEventualValue(e))
+        XCTAssertNil(e.peek())
         
         r.resolve("hi there")
         
-        XCTAssertEqual("hi there", UnsafeGetEventualValue(e))
+        XCTAssertEqual("hi there", e.peek())
         
         r.resolve("some new value")
         
-        XCTAssertEqual("hi there", UnsafeGetEventualValue(e))
+        XCTAssertEqual("hi there", e.peek())
     }
     
     func testLift() {
@@ -133,14 +133,14 @@ class EventualTests: XCTestCase {
         
         let lifted = lift(characterCount)(sEventual)
         
-        XCTAssertEqual(UnsafeGetEventualValue(lifted), 4)
+        XCTAssertEqual(lifted.peek(), 4)
         
         func add(lhs: Int, rhs: Int) -> Int {
             return lhs + rhs
         }
         let liftedAdd = lift(add)
         let liftedValue = liftedAdd( Eventual(2), Eventual(3) )
-        XCTAssertEqual(UnsafeGetEventualValue(liftedValue), 5)
+        XCTAssertEqual(liftedValue.peek(), 5)
         
         func weirdThreeArg(one: String, two: Int, three: String?) -> String {
             return "\(one) - \(two * 2) - \(three ?? "(missing)")"
@@ -148,23 +148,23 @@ class EventualTests: XCTestCase {
         XCTAssertEqual(weirdThreeArg("a", two: 2, three: "b"), "a - 4 - b")
         XCTAssertEqual(weirdThreeArg("z", two: 10, three: nil), "z - 20 - (missing)")
         let liftedWeird = lift(weirdThreeArg)
-        XCTAssertEqual(
-            UnsafeGetEventualValue(liftedWeird( Eventual("a"), Eventual(2), Eventual("b") ))
-            , "a - 4 - b")
-        XCTAssertEqual(
-            UnsafeGetEventualValue(liftedWeird( Eventual("z"), Eventual(10), Eventual(nil) ))
-            , "z - 20 - (missing)")
+        XCTAssertEqual( liftedWeird( Eventual("a"), Eventual(2), Eventual("b") ).peek()
+                      , "a - 4 - b"
+                      )
+        XCTAssertEqual( liftedWeird( Eventual("z"), Eventual(10), Eventual(nil) ).peek()
+                      , "z - 20 - (missing)"
+                      )
     }
     
     func testSpecialAccessToInternalValueInTests() {
         let r = Resolver<String>()
         let e = r.eventual
         
-        XCTAssertNil(UnsafeGetEventualValue(e))
+        XCTAssertNil(e.peek())
         
         r.resolve("hi there")
         
-        XCTAssertEqual(UnsafeGetEventualValue(e), "hi there")
+        XCTAssertEqual(e.peek(), "hi there")
     }
     
     func testPeek() {

@@ -65,32 +65,12 @@ public class Eventual<T> {
         }
         return otherE
     }
-
-    public func bind<U>(f: T -> Eventual<U>) -> Eventual<U> {
-        return flatMap(f)
-    }
     
     /// "Peek" into the current state of the Eventual
     /// - returns: `T?` The eventual value (when resolved) or nil (when not yet resolved)
     public func peek() -> T? {
         return value
     }
-}
-
-// MARK: - Convenience extension for simpler naming
-
-extension Eventual {
-    public func then<U>(f: T -> U) -> Eventual<U> {
-        return map(f)
-    }
-    
-    public func then<U>(f: T -> Eventual<U>) -> Eventual<U> {
-        return bind(f)
-    }
-}
-
-public func UnsafeGetEventualValue<T>(e: Eventual<T>) -> T? {
-    return e.value
 }
 
 // MARK: - Convenience extension for forcibly delaying resolution (useful for testing)
@@ -100,7 +80,7 @@ extension Eventual {
     /// - parameter seconds: The amount of seconds to delay by
     /// - returns: A new Eventual with the delay applied
     public func delayedBy(seconds: Double) -> Eventual<T> {
-        return self.bind { t in
+        return self.flatMap { t in
             let r = Resolver<Void>()
             
             let dispatchTime = dispatch_time(DISPATCH_TIME_NOW, Int64(seconds * Double(NSEC_PER_SEC)))
@@ -134,33 +114,33 @@ public struct Resolver<T> {
 // MARK: join
 
 public func join<A, B>(e1: Eventual<A>, _ e2: Eventual<B>) -> Eventual<(A, B)> {
-    return e1.then { (tValue: A) in e2.then { (uValue: B) in (tValue, uValue) } }
+    return e1.flatMap { a in e2.map { b in (a,b) } }
 }
 
 public func join<A, B, C>(e1: Eventual<A>, _ e2: Eventual<B>, _ e3: Eventual<C>) -> Eventual<(A, B, C)> {
-    return join(e1, e2).then { (a: A, b: B) in e3.then { c in (a, b, c) } }
+    return join(e1, e2).flatMap { (a: A, b: B) in e3.map { c in (a, b, c) } }
 }
 
 public func join<A, B, C, D>(e1: Eventual<A>, _ e2: Eventual<B>, _ e3: Eventual<C>, _ e4: Eventual<D>) -> Eventual<(A, B, C, D)> {
-    return join(e1, e2, e3).then { (a: A, b: B, c: C) in e4.then { d in (a, b, c, d) } }
+    return join(e1, e2, e3).flatMap { (a: A, b: B, c: C) in e4.map { d in (a, b, c, d) } }
 }
 
 public func join<A, B, C, D, E>(e1: Eventual<A>, _ e2: Eventual<B>, _ e3: Eventual<C>, _ e4: Eventual<D>, _ e5: Eventual<E>) -> Eventual<(A, B, C, D, E)> {
-    return join(e1, e2, e3, e4).then { (a: A, b: B, c: C, d: D) in e5.then { e in (a, b, c, d, e) } }
+    return join(e1, e2, e3, e4).flatMap { (a: A, b: B, c: C, d: D) in e5.map { e in (a, b, c, d, e) } }
 }
 
 // MARK: lift
 
 public func lift<A,B>(f: A -> B) -> (Eventual<A> -> Eventual<B>) {
-    return { (eA: Eventual<A>) in eA.then(f) }
+    return { (eA: Eventual<A>) in eA.map(f) }
 }
 
 public func lift<A,B,C>(f: (A, B) -> C) -> ((Eventual<A>, Eventual<B>) -> Eventual<C>) {
-    return { (eA: Eventual<A>, eB: Eventual<B>) in join(eA, eB).then(f) }
+    return { (eA: Eventual<A>, eB: Eventual<B>) in join(eA, eB).map(f) }
 }
 
 public func lift<A,B,C,D>(f: (A, B, C) -> D) -> ((Eventual<A>, Eventual<B>, Eventual<C>) -> Eventual<D>) {
-    return { (eA: Eventual<A>, eB: Eventual<B>, eC: Eventual<C>) in join(eA, eB, eC).then(f) }
+    return { (eA: Eventual<A>, eB: Eventual<B>, eC: Eventual<C>) in join(eA, eB, eC).map(f) }
 }
 
 // MARK: operators
@@ -169,4 +149,28 @@ infix operator >>- { associativity left precedence 100 }
 /// Operator equivalent to `flatMap`
 public func >>-<T,U>(lhs: Eventual<T>, rhs: T -> Eventual<U>) -> Eventual<U> {
     return lhs.flatMap(rhs)
+}
+
+// MARK: deprecated
+
+extension Eventual {
+    @available(*, deprecated, message="use map instead, it fits with swift naming conventions")
+    public func then<U>(f: T -> U) -> Eventual<U> {
+        return map(f)
+    }
+
+    @available(*, deprecated, message="use flatMap instead, it fits with swift naming conventions")
+    public func then<U>(f: T -> Eventual<U>) -> Eventual<U> {
+        return bind(f)
+    }
+
+    @available(*, deprecated, message="use flatMap instead, it fits with swift naming conventions")
+    public func bind<U>(f: T -> Eventual<U>) -> Eventual<U> {
+        return flatMap(f)
+    }
+}
+
+@available(*, deprecated, message="use peek instead")
+public func UnsafeGetEventualValue<T>(e: Eventual<T>) -> T? {
+    return e.value
 }
