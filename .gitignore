@@ -1,3 +1,4 @@
+
 # Created by https://www.gitignore.io/api/swift
 
 ### Swift ###
@@ -23,3 +24,16 @@ xcuserdata/
 ## Other
 *.moved-aside
 *.xcuserstate
+
+## Obj-C/Swift specific
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+## Playgrounds
+timeline.xctimeline
+playground.xcworkspace
+
+## Custom
+**/*.DS_Store
