@@ -124,7 +124,7 @@ class EventualTests: XCTestCase {
     }
     
     func testLift() {
-        func characterCount(s: String) -> Int {
+        func characterCount(_ s: String) -> Int {
             return s.characters.count
         }
         
@@ -135,14 +135,14 @@ class EventualTests: XCTestCase {
         
         XCTAssertEqual(lifted.peek(), 4)
         
-        func add(lhs: Int, rhs: Int) -> Int {
+        func add(_ lhs: Int, rhs: Int) -> Int {
             return lhs + rhs
         }
         let liftedAdd = lift(add)
         let liftedValue = liftedAdd( Eventual(2), Eventual(3) )
         XCTAssertEqual(liftedValue.peek(), 5)
         
-        func weirdThreeArg(one: String, two: Int, three: String?) -> String {
+        func weirdThreeArg(_ one: String, two: Int, three: String?) -> String {
             return "\(one) - \(two * 2) - \(three ?? "(missing)")"
         }
         XCTAssertEqual(weirdThreeArg("a", two: 2, three: "b"), "a - 4 - b")
@@ -179,27 +179,27 @@ class EventualTests: XCTestCase {
     }
     
     func testResolvingOffMainThreadWhileFinalizingOnMainThread() {
-        let mainQueue = NSOperationQueue.mainQueue()
-        let otherQueue = NSOperationQueue()
+        let mainQueue = OperationQueue.main
+        let otherQueue = OperationQueue()
         
         let r = Resolver<String>()
         let e = r.eventual
         
-        let expectation = self.expectationWithDescription("resolution happened")
+        let expectation = self.expectation(description: "resolution happened")
         
-        var calledOnQueue: NSOperationQueue? = nil
+        var calledOnQueue: OperationQueue? = nil
         var calledWithValue: String? = nil
         e.finallyOnMainThread { value in
-            calledOnQueue = NSOperationQueue.currentQueue()
+            calledOnQueue = OperationQueue.current
             calledWithValue = value
             expectation.fulfill()
         }
         
-        otherQueue.addOperationWithBlock({
+        otherQueue.addOperation({
             r.resolve("in the background")
         })
         
-        self.waitForExpectationsWithTimeout(10, handler: nil)
+        self.waitForExpectations(timeout: 10, handler: nil)
         
         XCTAssertEqual(calledOnQueue, mainQueue)
         XCTAssertEqual(calledWithValue, "in the background")
