@@ -37,9 +37,7 @@ open class Eventual<T> {
             if Thread.isMainThread {
                 f(t)
             } else {
-                OperationQueue.main.addOperation({
-                    f(t)
-                })
+                OperationQueue.main.addOperation { f(t) }
             }
         }
         if let v = self.value {
@@ -61,7 +59,7 @@ open class Eventual<T> {
         let otherE = Eventual<U>()
         finally { t in
             let newE = f(t)
-            newE.finally({ u in otherE.resolve(u) })
+            newE.finally { u in otherE.resolve(u) }
         }
         return otherE
     }
@@ -79,7 +77,7 @@ extension Eventual {
     /// Delay resolution by some amount of seconds
     /// - parameter seconds: The amount of seconds to delay by
     /// - returns: A new Eventual with the delay applied
-    public func delayedBy(_ seconds: Double) -> Eventual<T> {
+    public func delayed(by seconds: Double) -> Eventual<T> {
         return self.flatMap { t in
             let r = Resolver<Void>()
             

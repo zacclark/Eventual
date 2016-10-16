@@ -155,18 +155,7 @@ class EventualTests: XCTestCase {
                       , "z - 20 - (missing)"
                       )
     }
-    
-    func testSpecialAccessToInternalValueInTests() {
-        let r = Resolver<String>()
-        let e = r.eventual
-        
-        XCTAssertNil(e.peek())
-        
-        r.resolve("hi there")
-        
-        XCTAssertEqual(e.peek(), "hi there")
-    }
-    
+
     func testPeek() {
         let r = Resolver<String>()
         let e = r.eventual
@@ -195,11 +184,11 @@ class EventualTests: XCTestCase {
             expectation.fulfill()
         }
         
-        otherQueue.addOperation({
+        otherQueue.addOperation {
             r.resolve("in the background")
-        })
+        }
         
-        self.waitForExpectations(timeout: 10, handler: nil)
+        self.waitForExpectations(timeout: 10)
         
         XCTAssertEqual(calledOnQueue, mainQueue)
         XCTAssertEqual(calledWithValue, "in the background")
