@@ -69,6 +69,7 @@ public class Eventual<T> {
     public func peek() -> T? {
         return value
     }
+
 }
 
 // MARK: - Convenience extension for forcibly delaying resolution (useful for testing)
@@ -106,38 +107,58 @@ public struct Resolver<T> {
     }
 }
 
-// MARK: - Methods on eventuals
+// MARK: - Eventually
+
+public struct Eventually {}
 
 // MARK: join
 
-public func join<A, B>(_ e1: Eventual<A>, _ e2: Eventual<B>) -> Eventual<(A, B)> {
-    return e1.flatMap { a in e2.map { b in (a,b) } }
-}
+extension Eventually {
+    public static func join<A, B>(_ e1: Eventual<A>, _ e2: Eventual<B>) -> Eventual<(A, B)> {
+        return e1.flatMap { (a: A) in
+            e2.map { b in (a,b) }
+        }
+    }
 
-public func join<A, B, C>(_ e1: Eventual<A>, _ e2: Eventual<B>, _ e3: Eventual<C>) -> Eventual<(A, B, C)> {
-    return join(e1, e2).flatMap { (a: A, b: B) in e3.map { c in (a, b, c) } }
-}
+    public static func join<A, B, C>(_ e1: Eventual<A>, _ e2: Eventual<B>, _ e3: Eventual<C>) -> Eventual<(A, B, C)> {
+        return join(e1, e2).flatMap { (a: A, b: B) in
+            e3.map { c in (a, b, c) }
+        }
+    }
 
-public func join<A, B, C, D>(_ e1: Eventual<A>, _ e2: Eventual<B>, _ e3: Eventual<C>, _ e4: Eventual<D>) -> Eventual<(A, B, C, D)> {
-    return join(e1, e2, e3).flatMap { (a: A, b: B, c: C) in e4.map { d in (a, b, c, d) } }
-}
+    public static func join<A, B, C, D>(_ e1: Eventual<A>, _ e2: Eventual<B>, _ e3: Eventual<C>, _ e4: Eventual<D>) -> Eventual<(A, B, C, D)> {
+        return join(e1, e2, e3).flatMap { (a: A, b: B, c: C) in
+            e4.map { d in (a, b, c, d) }
+        }
+    }
 
-public func join<A, B, C, D, E>(_ e1: Eventual<A>, _ e2: Eventual<B>, _ e3: Eventual<C>, _ e4: Eventual<D>, _ e5: Eventual<E>) -> Eventual<(A, B, C, D, E)> {
-    return join(e1, e2, e3, e4).flatMap { (a: A, b: B, c: C, d: D) in e5.map { e in (a, b, c, d, e) } }
+    public static func join<A, B, C, D, E>(_ e1: Eventual<A>, _ e2: Eventual<B>, _ e3: Eventual<C>, _ e4: Eventual<D>, _ e5: Eventual<E>) -> Eventual<(A, B, C, D, E)> {
+        return join(e1, e2, e3, e4).flatMap { (a: A, b: B, c: C, d: D) in
+            e5.map { e in (a, b, c, d, e) }
+        }
+    }
 }
 
 // MARK: lift
 
-public func lift<A,B>(_ f: @escaping (A) -> B) -> ((Eventual<A>) -> Eventual<B>) {
-    return { (eA: Eventual<A>) in eA.map(f) }
-}
+extension Eventually {
+    public static func lift<A,B>(_ f: @escaping (A) -> B) -> ((Eventual<A>) -> Eventual<B>) {
+        return { (eA: Eventual<A>) in
+            eA.map(f)
+        }
+    }
 
-public func lift<A,B,C>(_ f: @escaping (A, B) -> C) -> ((Eventual<A>, Eventual<B>) -> Eventual<C>) {
-    return { (eA: Eventual<A>, eB: Eventual<B>) in join(eA, eB).map(f) }
-}
+    public static func lift<A,B,C>(_ f: @escaping (A, B) -> C) -> ((Eventual<A>, Eventual<B>) -> Eventual<C>) {
+        return { (eA: Eventual<A>, eB: Eventual<B>) in
+            join(eA, eB).map(f)
+        }
+    }
 
-public func lift<A,B,C,D>(_ f: @escaping (A, B, C) -> D) -> ((Eventual<A>, Eventual<B>, Eventual<C>) -> Eventual<D>) {
-    return { (eA: Eventual<A>, eB: Eventual<B>, eC: Eventual<C>) in join(eA, eB, eC).map(f) }
+    public static func lift<A,B,C,D>(_ f: @escaping (A, B, C) -> D) -> ((Eventual<A>, Eventual<B>, Eventual<C>) -> Eventual<D>) {
+        return { (eA: Eventual<A>, eB: Eventual<B>, eC: Eventual<C>) in
+            join(eA, eB, eC).map(f)
+        }
+    }
 }
 
 // MARK: operators

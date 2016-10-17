@@ -76,7 +76,8 @@ class EventualTests: XCTestCase {
     }
     
     func testJoin2() {
-        let joined = join(Eventual("hi"), Eventual(2))
+
+        let joined = Eventually.join(Eventual("hi"), Eventual(2))
         let firstJoinedValue: (String, Int)? = joined.peek()
         
         XCTAssertEqual(firstJoinedValue?.0, "hi")
@@ -84,7 +85,7 @@ class EventualTests: XCTestCase {
         
         let r1 = Resolver<String>()
         let r2 = Resolver<Int>()
-        let joined2 = join(r1.eventual, r2.eventual)
+        let joined2 = Eventually.join(r1.eventual, r2.eventual)
         
         XCTAssertNil(joined2.peek())
         
@@ -99,7 +100,7 @@ class EventualTests: XCTestCase {
     }
     
     func testJoin3() {
-        let joined = join(Eventual("hi"), Eventual(2), Eventual(("Inner", "Tuple")))
+        let joined = Eventually.join(Eventual("hi"), Eventual(2), Eventual(("Inner", "Tuple")))
         let firstJoinedValue: (String, Int, (String, String))? = joined.peek()
         
         XCTAssertEqual(firstJoinedValue?.0, "hi")
@@ -131,14 +132,14 @@ class EventualTests: XCTestCase {
         let sEventual = Eventual("four")
         var eventualValue: Int? = nil
         
-        let lifted = lift(characterCount)(sEventual)
+        let lifted = Eventually.lift(characterCount)(sEventual)
         
         XCTAssertEqual(lifted.peek(), 4)
         
         func add(_ lhs: Int, rhs: Int) -> Int {
             return lhs + rhs
         }
-        let liftedAdd = lift(add)
+        let liftedAdd = Eventually.lift(add)
         let liftedValue = liftedAdd( Eventual(2), Eventual(3) )
         XCTAssertEqual(liftedValue.peek(), 5)
         
@@ -147,7 +148,7 @@ class EventualTests: XCTestCase {
         }
         XCTAssertEqual(weirdThreeArg("a", two: 2, three: "b"), "a - 4 - b")
         XCTAssertEqual(weirdThreeArg("z", two: 10, three: nil), "z - 20 - (missing)")
-        let liftedWeird = lift(weirdThreeArg)
+        let liftedWeird = Eventually.lift(weirdThreeArg)
         XCTAssertEqual( liftedWeird( Eventual("a"), Eventual(2), Eventual("b") ).peek()
                       , "a - 4 - b"
                       )
