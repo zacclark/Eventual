@@ -168,27 +168,3 @@ infix operator >>-: AdditionPrecedence
 public func >>-<T,U>(lhs: Eventual<T>, rhs: @escaping (T) -> Eventual<U>) -> Eventual<U> {
     return lhs.flatMap(rhs)
 }
-
-// MARK: deprecated
-
-extension Eventual {
-    @available(*, deprecated, message: "use map instead, it fits with swift naming conventions")
-    public func then<U>(_ f: @escaping (T) -> U) -> Eventual<U> {
-        return map(f)
-    }
-
-    @available(*, deprecated, message: "use flatMap instead, it fits with swift naming conventions")
-    public func then<U>(_ f: @escaping (T) -> Eventual<U>) -> Eventual<U> {
-        return bind(f)
-    }
-
-    @available(*, deprecated, message: "use flatMap instead, it fits with swift naming conventions")
-    public func bind<U>(_ f: @escaping (T) -> Eventual<U>) -> Eventual<U> {
-        return flatMap(f)
-    }
-}
-
-@available(*, deprecated, message: "use peek instead")
-public func UnsafeGetEventualValue<T>(_ e: Eventual<T>) -> T? {
-    return e.value
-}
