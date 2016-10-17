@@ -1,4 +1,4 @@
-open class Eventual<T> {
+public class Eventual<T> {
     typealias Effect = (T) -> Void
     fileprivate var value: T?
     fileprivate var effects: [Effect]
@@ -24,7 +24,7 @@ open class Eventual<T> {
         }
     }
     
-    fileprivate func finally(_ f: @escaping (T) -> Void) {
+    private func finally(_ f: @escaping (T) -> Void) {
         if let v = self.value {
             f(v)
             return
@@ -32,7 +32,7 @@ open class Eventual<T> {
         effects.append(f)
     }
     
-    open func finallyOnMainThread(_ f: @escaping (T) -> Void) {
+    public func finallyOnMainThread(_ f: @escaping (T) -> Void) {
         let mainThreadF: (T) -> Void = { t in
             if Thread.isMainThread {
                 f(t)
@@ -47,7 +47,7 @@ open class Eventual<T> {
         effects.append(mainThreadF)
     }
     
-    open func map<U>(_ f: @escaping (T) -> U) -> Eventual<U> {
+    public func map<U>(_ f: @escaping (T) -> U) -> Eventual<U> {
         let otherE = Eventual<U>()
         finally { t in
             otherE.resolve(f(t))
@@ -55,7 +55,7 @@ open class Eventual<T> {
         return otherE
     }
     
-    open func flatMap<U>(_ f: @escaping (T) -> Eventual<U>) -> Eventual<U> {
+    public func flatMap<U>(_ f: @escaping (T) -> Eventual<U>) -> Eventual<U> {
         let otherE = Eventual<U>()
         finally { t in
             let newE = f(t)
@@ -66,7 +66,7 @@ open class Eventual<T> {
     
     /// "Peek" into the current state of the Eventual
     /// - returns: `T?` The eventual value (when resolved) or nil (when not yet resolved)
-    open func peek() -> T? {
+    public func peek() -> T? {
         return value
     }
 }
