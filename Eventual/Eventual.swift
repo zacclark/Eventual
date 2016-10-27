@@ -91,6 +91,11 @@ extension Eventual {
             return r.eventual.map { _ in t }
         }
     }
+
+    @available(*, unavailable, renamed: "delayed(by:)")
+    public func delayedBy(_ seconds: Double) -> Eventual<T> {
+        return delayed(by: seconds)
+    }
 }
 
 // MARK: - Resolver
